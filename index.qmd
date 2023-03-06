@@ -1,8 +1,5 @@
 ---
 title: "Greenhouse Gas Accounting Portfolio"
-project:
-  type: website
-  output-dir: docs
 ---
 
 This is a Quarto website.
