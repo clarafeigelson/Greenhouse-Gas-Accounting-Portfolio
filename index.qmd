@@ -1,11 +1,22 @@
 ---
-title: "Greenhouse Gas Accounting Portfolio"
+title: "Clara Feigelson"
+subtitle: "Colorado State University"
+image: head-photo.jpg
+about: 
+  template: trestles
+  image-shape: rounded
+  image-width: 15em
+  links: 
+    - text: LinkedIn
+      href: https://www.linkedin.com/in/clarafeigelson/
+    - text: GitHub
+      href: https://github.com/clarafeigelson
+    - text: Email
+      href: mailto:cfeigel@colostate.edu
 ---
 
-This is a Quarto website.
+## Greenhouse Gas Accounting Portfolio
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+This portfolio of coursework and projects features various techniques of greenhouse gas inventorying and accounting. Samples of a Monte Carlo Simulation, Fugitive Emission Modeling, and Data Visualization can be found in the tabs above.
 
-```{r}
-1 + 1
-```
+All projects are executed in R during my Professional Science Master's in Ecosystem Science and Sustainability (PSM-ESS) degree at Colorado State University (CSU). All coursework prompts and basic code structure credit goes to Dr. Stephen Ogle, Ecosystem Science and Sustainability Professor at CSU and Dr. Adela Chen, Computer Information Systems Professor at CSU.

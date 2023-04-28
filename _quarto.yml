@@ -3,16 +3,28 @@ project:
   output-dir: docs
 
 website:
-  title: "Greenhouse Gas Accounting Portfolio"
+  title: "GHG Portfolio"
   navbar:
     left:
       - href: index.qmd
         text: Home
       - about.qmd
+      - text: Advanced GHG Accounting
+        menu: 
+          - href: ESS-696.qmd
+            text: Monte Carlo Simulation
+          - href: ESS-545.qmd
+            text: Fugitive Emissions Modeling
+      - text: Data Visualization
+        menu: 
+          - href: CIS-576.qmd
+            text: Network Data
+          - href: CIS-576-2.qmd
+            text: Time Series Data
 
 format:
   html:
-    theme: cosmo
+    theme: morph
     css: styles.css
     toc: true
 

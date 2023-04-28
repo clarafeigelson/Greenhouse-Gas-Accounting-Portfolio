@@ -1,9 +1,8 @@
 ---
 title: "About"
+subtitle: "Greenhouse Gas Accounting | Decarbonization | Sustainability"
 ---
 
-About this site
+Clara Feigelson graduated Colorado State University in 2023 with a Professional Science Master's in Ecosystem Science and Sustainability. She is experienced in greenhouse gas inventorying and accounting, data visualization, programming in R, and developing emission reduction strategies to meet climate targets.
 
-```{r}
-1 + 1
-```
+Her professional goal is to participate in climate action through greenhouse gas mitigation and help clients transition to a net-zero carbon future.

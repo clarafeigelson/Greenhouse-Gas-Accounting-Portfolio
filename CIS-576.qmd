@@ -1,0 +1,72 @@
+---
+title: "Network Data Visualization"
+---
+
+Network data consists of nodes and edges or links between the nodes. Network visualizations show the interconnections, relationships, and/or hiearchies between nodes.
+
+```{r include=FALSE}
+library(tidyverse)
+library(tidygraph)
+library(ggraph)
+library(readxl)
+library(deldir)
+library(igraph)
+```
+
+```{r include=FALSE}
+# Read in data from excel
+nodes <- read_excel("data/EmployeeEmails.xlsx", sheet = "Departments")
+edges <- read_excel("data/EmployeeEmails.xlsx", sheet = "Emails")
+
+# Create table graph of nodes and edges
+network_emails <- tbl_graph(nodes=nodes, edges=edges, directed = TRUE)
+```
+
+### Email Communication Relational Network
+
+```{r warning=FALSE}
+ggraph(network_emails) +
+  geom_edge_diagonal(arrow = arrow(length = unit(1.25, "mm"), type = "closed"), end_cap=circle(2,"mm")) +
+  geom_node_point(size = 4, aes(color = Department)) +
+  labs(title = "Direction of Email Communication between Employees by Departments") +
+  theme_void()
+```
+
+Using a practice dataset, this visualization shows the direction of email communication between fictional employees of various departments. Each node represents an employee and each edge or link represents email communication between the two employees. The arrows on the edges indicate the direction of communication. The color of the nodes displays which department the employee belongs to.
+
+### Magnoliopsida Plant Taxonomic Web
+
+```{r include=FALSE}
+# Read in data from csv
+plant_data_raw <- read.csv("data/COPlants_Magnoliopsida.csv")
+
+# Select for pertinent variables
+plant_data <- plant_data_raw %>% 
+  select(Class, Order, Family, Genus) %>% 
+  distinct()
+
+# Define edges
+plant_edges <-  map_df(2:ncol(plant_data), ~select(plant_data, all_of(.x-1):.x) %>%
+    setNames(c("from", "to"))) %>% 
+    distinct()
+
+# Create table graph of edges and join pertinent variables to nodes within table graph
+plant_graph <- as_tbl_graph(plant_edges) %>% 
+  activate(nodes) %>% 
+  left_join(plant_data, by = c("name" = "Genus"))
+
+```
+
+```{r warning=FALSE}
+plant_circlepack <- create_layout(plant_graph, layout = 'circlepack')
+
+ggraph(plant_circlepack) +
+  geom_edge_diagonal(alpha = 0.1) +
+  geom_node_point(alpha = 0.8, aes(color = Order, filter = leaf), size = 1) +
+  geom_node_text(aes(filter = depth == 1, label = name), check_overlap = TRUE, size = 2) +
+  labs(title = "Colorado Magnoliopsida Plant Taxonomy Web by Order") +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+This taxonomic web shows all the different Orders of the Colorado Magnoliopsida Plant in relation to one another. Each node represents the genus of a Magnoliopsida. It depicts the number of nodes clearly as well as their proximity to the Class in the center. Each cluster of nodes is labeled and colorcoded by the Order name.

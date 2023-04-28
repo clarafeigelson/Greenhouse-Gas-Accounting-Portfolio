@@ -4,13 +4,48 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "text": "Clara Feigelson graduated Colorado State University in 2023 with a Professional Science Master’s in Ecosystem Science and Sustainability. She is experienced in greenhouse gas inventorying and accounting, data visualization, programming in R, and developing emission reduction strategies to meet climate targets.\nHer professional goal is to participate in climate action through greenhouse gas mitigation and help clients transition to a net-zero carbon future."
   },
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Greenhouse Gas Accounting Portfolio",
+    "title": "Clara Feigelson",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "This portfolio of coursework and projects features various techniques of greenhouse gas inventorying and accounting. Samples of a Monte Carlo Simulation, Fugitive Emission Modeling, and Data Visualization can be found in the tabs above.\nAll projects are executed in R during my Professional Science Master’s in Ecosystem Science and Sustainability (PSM-ESS) degree at Colorado State University (CSU). All coursework prompts and basic code structure credit goes to Dr. Stephen Ogle, Ecosystem Science and Sustainability Professor at CSU and Dr. Adela Chen, Computer Information Systems Professor at CSU."
+  },
+  {
+    "objectID": "index.html#accounting-portfolio",
+    "href": "index.html#accounting-portfolio",
+    "title": "Clara Feigelson",
+    "section": "Accounting Portfolio",
+    "text": "Accounting Portfolio"
+  },
+  {
+    "objectID": "CIS-576-2.html",
+    "href": "CIS-576-2.html",
+    "title": "Time Series Visualization",
+    "section": "",
+    "text": "Using a practice dataset featuring several universities in the US and award funding, I created two time series plots. Colorado State University (CSU)‘s National Science Foundation (NSF) award funding is compared to its institutional peers’ NSF award funding between 2001 and 2012. Institutional peers include University of California - Davis, University of Illinois - Urbana Champaign, University of Tennessee, Virginia Polytechnic Institute and State University, Washington State University, Iowa State University, Kansas State University, Michigan State University, North Carolina State University Oklahoma State University, Oregon State University, Purdue University, and Texas A & M University. The data were filtered and subset to clean them up for the visualizations.\n\nTime Series in One Plot\nThis plot shows CSU’s award funding (in red) compared to its institutional peers (in blue) between 2001 and 2012.\n\nplot1 <- ggplot(highlight_combo, mapping = aes(x = as.factor(AwardYear), y = AWARD_SUM, color = highlight, group = Organization)) +\n  geom_line() +\n  labs(title = \"CSU and Institutional Peers Funding Time Series 2001-2012\", x = \"Award Year\", y = \"Total Money Awarded\") +\n  scale_y_continuous(labels = scales::label_dollar()) +\n  theme(legend.title = element_blank(),axis.ticks.x = element_blank(),axis.text.x = element_blank())\n\nprint(plot1)\n\n\n\n\n\n\nTime Series in Small Multiples\nThis plot shows all university NSF award funding between 2001 and 2012. Each small graph is a time series for a specific university. The acronyms correspond with the universities listed above. This plot shows the same information as the previous plot but in a different format.\n\nplot2 <- combo %>% \n  ggplot(mapping = aes(x = as.factor(AwardYear), y = AWARD_SUM, color = Organization, group = Organization)) +\n  geom_line() +\n  labs(title = \"Award Funding by University Time Series 2001-2012\", x = \"Award Year\", y = \"Total Money Awarded\") +\n  scale_y_continuous(labels = scales::label_dollar()) +\n  facet_wrap(~Acronym) +\n  theme(legend.position = \"none\", axis.ticks.x = element_blank(),axis.text.x = element_blank())\n\nprint(plot2)"
+  },
+  {
+    "objectID": "CIS-576-2.html#time-series-in-one-plot",
+    "href": "CIS-576-2.html#time-series-in-one-plot",
+    "title": "Time Series Visualization",
+    "section": "Time Series in One Plot",
+    "text": "Time Series in One Plot\n\nhighlight_combo <- combo %>% \n  mutate(highlight = if_else(Acronym == \"CSU\", \"CSU\", \"IP\"))\n\nplot4 <- ggplot(highlight_combo, mapping = aes(x = as.factor(AwardYear), y = AWARD_SUM, color = highlight, group = Organization)) +\n  geom_line() +\n  labs(title = \"CSU and Institutional Peers Funding Time Series 2001-2012\", x = \"Award Year\", y = \"Total Money Awarded\") +\n  scale_y_continuous(labels = scales::label_dollar()) +\n  theme(legend.title = element_blank(),axis.ticks.x = element_blank(),axis.text.x = element_blank())\n\nprint(plot4)"
+  },
+  {
+    "objectID": "CIS-576-2.html#time-series-in-small-multiples",
+    "href": "CIS-576-2.html#time-series-in-small-multiples",
+    "title": "Time Series Visualization",
+    "section": "Time Series in Small Multiples",
+    "text": "Time Series in Small Multiples\n\nplot5 <- combo %>% \n  ggplot(mapping = aes(x = as.factor(AwardYear), y = AWARD_SUM, color = Organization, group = Organization)) +\n  geom_line() +\n  labs(title = \"NSF Funding by University Time Series 2001-2012\", x = \"Award Year\", y = \"Total Money Awarded\") +\n  scale_y_continuous(labels = scales::label_dollar()) +\n  facet_wrap(~Acronym) +\n  theme(legend.position = \"none\", axis.ticks.x = element_blank(),axis.text.x = element_blank())\n\nprint(plot5)"
+  },
+  {
+    "objectID": "CIS-576.html",
+    "href": "CIS-576.html",
+    "title": "Network Data Visualization",
+    "section": "",
+    "text": "Network data consists of nodes and edges or links between the nodes. Network visualizations show the interconnections, relationships, and/or hiearchies between nodes.\n\nEmail Communication Relational Network\n\nggraph(network_emails) +\n  geom_edge_diagonal(arrow = arrow(length = unit(1.25, \"mm\"), type = \"closed\"), end_cap=circle(2,\"mm\")) +\n  geom_node_point(size = 4, aes(color = Department)) +\n  labs(title = \"Direction of Email Communication between Employees by Departments\") +\n  theme_void()\n\nUsing \"stress\" as default layout\n\n\n\n\n\nUsing a practice dataset, this visualization shows the direction of email communication between fictional employees of various departments. Each node represents an employee and each edge or link represents email communication between the two employees. The arrows on the edges indicate the direction of communication. The color of the nodes displays which department the employee belongs to.\n\n\nMagnoliopsida Plant Taxonomic Web\n\nplant_circlepack <- create_layout(plant_graph, layout = 'circlepack')\n\nggraph(plant_circlepack) +\n  geom_edge_diagonal(alpha = 0.1) +\n  geom_node_point(alpha = 0.8, aes(color = Order, filter = leaf), size = 1) +\n  geom_node_text(aes(filter = depth == 1, label = name), check_overlap = TRUE, size = 2) +\n  labs(title = \"Colorado Magnoliopsida Plant Taxonomy Web by Order\") +\n  theme_void() +\n  theme(legend.position = \"none\")\n\n\n\n\nThis taxonomic web shows all the different Orders of the Colorado Magnoliopsida Plant in relation to one another. Each node represents the genus of a Magnoliopsida. It depicts the number of nodes clearly as well as their proximity to the Class in the center. Each cluster of nodes is labeled and colorcoded by the Order name."
   }
 ]

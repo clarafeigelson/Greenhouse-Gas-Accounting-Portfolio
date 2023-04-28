@@ -1,0 +1,121 @@
+---
+title: "Time Series Visualization"
+---
+
+Using a practice dataset featuring several universities in the US and award funding, I created two time series plots. Colorado State University (CSU)'s National Science Foundation (NSF) award funding is compared to its institutional peers' NSF award funding between 2001 and 2012. Institutional peers include University of California - Davis, University of Illinois - Urbana Champaign, University of Tennessee, Virginia Polytechnic Institute and State University, Washington State University, Iowa State University, Kansas State University, Michigan State University, North Carolina State University Oklahoma State University, Oregon State University, Purdue University, and Texas A & M University. The data were filtered and subset to clean them up for the visualizations.
+
+```{r include=FALSE}
+# Load Libraries
+library(readxl)
+library(tidyverse)
+library(gridExtra)
+library(ggrepel)
+```
+
+```{r include=FALSE}
+#Uploading data
+data<-read_xlsx("data/NSF_Funding_by_Year.xlsx")
+```
+
+```{r include=FALSE}
+# Subset data to CSU
+
+CSU <- data %>% 
+  filter(str_detect(Organization, "Colorado State")) %>% 
+  mutate(Acronym = recode(Organization, "Colorado State University" = "CSU", "Colorado State University-Pueblo" = "CSU"))
+
+# Consolidate all CSU campus information into single records by year
+
+CSU2 <- CSU %>% 
+  group_by(AwardYear) %>% 
+  summarise(AWARD_COUNT = sum(AWARD_COUNT), AWARD_SUM = sum(AWARD_SUM), AvarageAwardDuration = mean(AvarageAwardDuration))%>% 
+  mutate(Organization = "Colorado State University") %>% 
+  mutate(Acronym = recode(Organization, "Colorado State University" = "CSU")) %>% 
+  mutate("Average Award Duration (years)" = AvarageAwardDuration)
+
+
+# Subset data to Institutional Peers(IP)
+
+IP <- data %>% 
+  filter(str_detect(Organization, "Colorado State", negate = TRUE)) %>%
+  filter(Organization == "Iowa State University" | Organization == "Kansas State University" | Organization == "Michigan State University" | Organization == "North Carolina State University" | Organization == "Oklahoma State University" | Organization == "Oregon State University" | Organization == "Purdue University" | str_detect(Organization, "^Texas A&M") | Organization == "University of California-Davis" | Organization == "University of Illinois at Urbana-Champaign" | str_detect(Organization, "^University of Tennessee") | Organization == "Virginia Polytechnic Institute and State University" | Organization == "Washington State University")
+
+
+# Consolidate all Texas A&M campus information into single records by year
+
+IP_TAM <- IP %>% 
+  filter(str_detect(Organization, "^Texas A&M")) %>% 
+  group_by(AwardYear) %>% 
+   summarise(AWARD_COUNT = sum(AWARD_COUNT), AWARD_SUM = sum(AWARD_SUM), AvarageAwardDuration = mean(AvarageAwardDuration)) %>% 
+  mutate(Organization = "Texas A&M")
+
+# Consolidate all University of Tennessee campus information into single records by year
+
+IP_UT <- IP %>% 
+  filter(str_detect(Organization, "^University of Tennessee")) %>% 
+  group_by(AwardYear) %>% 
+  summarise(AWARD_COUNT = sum(AWARD_COUNT), AWARD_SUM = sum(AWARD_SUM), AvarageAwardDuration = mean(AvarageAwardDuration)) %>% 
+  mutate(Organization = "University of Tennessee")
+  
+# Consolidate all info that is not related to Texas A&M and University of Tennessee
+
+IP_other <- IP %>% 
+  filter(!Organization %in% c("Texas A&M International University", "Texas A&M Research Foundation", "Texas A&M University Corpus Christi","Texas A&M University Main Campus", "Texas A&M University-Commerce", "Texas A&M University-Kingsville", "University of Tennessee Chattanooga", "University of Tennessee Institute of Agriculture", "University of Tennessee Knoxville", "University of Tennessee Space Institute" ))
+
+# recombine TAM and UT information into the larger dataset
+
+IP_converge <- IP_other %>% 
+  bind_rows(IP_TAM) %>% 
+  bind_rows(IP_UT) %>%
+   mutate("Average Award Duration (years)" = AvarageAwardDuration)
+
+# combine IP_converge with CSU data
+
+combo <- IP_converge %>% 
+  bind_rows(CSU2) %>% 
+     mutate(Acronym = recode(Organization, "Iowa State University" = "ISU", "Kansas State University" = "KSU", "Michigan State University" = "MSU", "North Carolina State University" = "NCSU", "Oklahoma State University" = "OkSU", "Oregon State University" = "OrSU", "Purdue University" = "PU", "University of California-Davis" = "UCD", "University of Illinois at Urbana-Champaign" = "UI", "Virginia Polytechnic Institute and State University" = "VPISU", "Washington State University" = "WSU", "Colorado State University" = "CSU", "University of Tennessee" = "UT", "Texas A&M" = "TAM" )) %>% 
+  mutate(Group = if_else(Acronym == "CSU", "CSU", "IP"))
+
+# checks how many organizations there are in the institutional peers object
+unique(combo$Acronym)
+
+# Filter data to include just 2012
+
+combo_2012 <- combo %>% 
+  filter(AwardYear == 2012)
+```
+
+### Time Series in One Plot
+
+This plot shows CSU's award funding (in red) compared to its institutional peers (in blue) between 2001 and 2012.
+
+```{r include=FALSE}
+highlight_combo <- combo %>% 
+  mutate(highlight = if_else(Acronym == "CSU", "CSU", "IP"))
+```
+
+```{r message=FALSE}
+plot1 <- ggplot(highlight_combo, mapping = aes(x = as.factor(AwardYear), y = AWARD_SUM, color = highlight, group = Organization)) +
+  geom_line() +
+  labs(title = "CSU and Institutional Peers Funding Time Series 2001-2012", x = "Award Year", y = "Total Money Awarded") +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  theme(legend.title = element_blank(),axis.ticks.x = element_blank(),axis.text.x = element_blank())
+
+print(plot1)
+```
+
+### Time Series in Small Multiples
+
+This plot shows all university NSF award funding between 2001 and 2012. Each small graph is a time series for a specific university. The acronyms correspond with the universities listed above. This plot shows the same information as the previous plot but in a different format.
+
+```{r message=FALSE}
+plot2 <- combo %>% 
+  ggplot(mapping = aes(x = as.factor(AwardYear), y = AWARD_SUM, color = Organization, group = Organization)) +
+  geom_line() +
+  labs(title = "Award Funding by University Time Series 2001-2012", x = "Award Year", y = "Total Money Awarded") +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  facet_wrap(~Acronym) +
+  theme(legend.position = "none", axis.ticks.x = element_blank(),axis.text.x = element_blank())
+
+print(plot2)
+```
